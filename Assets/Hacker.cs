@@ -6,6 +6,10 @@ public class Hacker : MonoBehaviour {
 
   bool isBond = false;
   int level = 0;
+  string password;
+  string[] levelOnePasswords = {"toast", "fringe", "cave"};
+  string[] levelTwoPasswords = {"orangutan", "pineapple", "horsecarbatterystaple"};
+  string[] levelThreePasswords = {"complicatedsituation", "unfathomablesadness", "strainedparentalrelationships"};
   enum Screen {MainMenu, Password, Win };
   Screen currentScreen = Screen.MainMenu;
   // Use this for initialization
@@ -44,6 +48,8 @@ public class Hacker : MonoBehaviour {
       RunMainMenu(input);
     } else if (currentScreen == Screen.Password){
       HandleOnPassword(input);
+    } else if (currentScreen == Screen.Win) {
+      HandleOnWin(input);
     }
   }
 
@@ -70,10 +76,32 @@ public class Hacker : MonoBehaviour {
   void StartGame(){
     Terminal.WriteLine("You have chosen level " + level);
     currentScreen = Screen.Password;
+    if (level == 1) {
+      password = levelOnePasswords[Random.Range(0, levelOnePasswords.Length)];
+    } else if (level == 2) {
+      password = levelTwoPasswords[Random.Range(0, levelTwoPasswords.Length)];
+    } else if (level == 3) {
+      password = levelThreePasswords[Random.Range(0, levelThreePasswords.Length)];
+    }
+    Terminal.WriteLine("Please enter your password:");
   }
 
   // Other Funcs
-  void HandleOnPassword(string input){
-    Terminal.WriteLine("Guessed password: " + input);
+  void HandleOnPassword(string input) {
+    if (input == password) {
+      Terminal.WriteLine("Congratulations! You Win!");
+      Terminal.WriteLine("Again? Y/N");
+      currentScreen = Screen.Win;
+    }
+    else {
+      Terminal.WriteLine("Incorrect Password. You typed: " + input);
+    }
+  }
+
+  void HandleOnWin(string input) {
+    if (input == "Y") {
+      currentScreen = Screen.MainMenu;
+      ShowMainMenu();
+    }
   }
 }
