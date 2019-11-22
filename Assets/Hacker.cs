@@ -54,18 +54,13 @@ public class Hacker : MonoBehaviour {
   }
 
   void RunMainMenu(string input){
+    bool isValidLevelNumber = (input == "1" || input == "2" || input == "3");
     if (input == "007"){
       isBond = true;
       currentScreen = Screen.MainMenu;
       ShowMainMenu();
-    } else if (input == "1"){
-      level = 1;
-      StartGame();
-    } else if (input == "2"){
-      level = 2;
-      StartGame();
-    } else if (input == "3"){
-      level = 3;
+    } else if (isValidLevelNumber){
+      level = int.Parse(input);
       StartGame();
     } else {
       Terminal.WriteLine("Please select a valid level.");
@@ -74,27 +69,20 @@ public class Hacker : MonoBehaviour {
 
   // Start Game
   void StartGame(){
-    Terminal.WriteLine("You have chosen level " + level);
     currentScreen = Screen.Password;
-    if (level == 1) {
-      password = levelOnePasswords[Random.Range(0, levelOnePasswords.Length)];
-    } else if (level == 2) {
-      password = levelTwoPasswords[Random.Range(0, levelTwoPasswords.Length)];
-    } else if (level == 3) {
-      password = levelThreePasswords[Random.Range(0, levelThreePasswords.Length)];
-    }
-    Terminal.WriteLine("Please enter your password:");
+    SetPassword();
+    Terminal.ClearScreen();
+    PromptAndHint();
   }
 
   // Other Funcs
   void HandleOnPassword(string input) {
     if (input == password) {
-      Terminal.WriteLine("Congratulations! You Win!");
-      Terminal.WriteLine("Again? Y/N");
-      currentScreen = Screen.Win;
+      DisplayWinScreen();
     }
     else {
       Terminal.WriteLine("Incorrect Password. You typed: " + input);
+      PromptAndHint();
     }
   }
 
@@ -103,5 +91,74 @@ public class Hacker : MonoBehaviour {
       currentScreen = Screen.MainMenu;
       ShowMainMenu();
     }
+  }
+
+  void SetPassword() {
+    switch(level){
+      case 1:
+        password = levelOnePasswords[Random.Range(0, levelOnePasswords.Length)];
+        break;
+      case 2:
+        password = levelTwoPasswords[Random.Range(0, levelTwoPasswords.Length)];
+        break;
+      case 3:
+        password = levelThreePasswords[Random.Range(0, levelThreePasswords.Length)];
+        break;
+      default:
+        Debug.LogError("Invalid Level Number");
+        break;
+    }
+  }
+
+  void DisplayWinScreen() {
+    currentScreen = Screen.Win;
+    Terminal.ClearScreen();
+    ShowLevelReward();
+  }
+
+  void ShowLevelReward() {
+    switch (level) {
+      case 1:
+        Terminal.WriteLine("Accept Gift 1");
+        Terminal.WriteLine(@"
+  ^%^
+------
+|    |
+|    |
+------
+"       );
+        break;
+      case 2:
+        Terminal.WriteLine("Accept Gift 2");
+        Terminal.WriteLine(@"
+__________
+|   ##   |
+|   %%   |
+[--------]
+ \      /
+  \____/
+"       );
+        break;
+      case 3:
+        Terminal.WriteLine("Accept Gift 3");
+        Terminal.WriteLine(@"
+   ________
+  //    //|
+ //    // |
+=======   |
+|     |   |
+|     |   |
+|_____|//
+"       );
+        break;
+      default:
+        Debug.LogError("Invalid Level Number");
+        break;
+    }
+    Terminal.WriteLine("Again? Y\\N");
+  }
+
+  void PromptAndHint() {
+    Terminal.WriteLine("Enter your password: hint: " + password.Anagram());
   }
 }
